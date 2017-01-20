@@ -4,8 +4,6 @@ var promptPromise = require('prompt-promise');
 var inquirer = require('inquirer');
 
 
-
-
 /*
 This function should "return" the default homepage posts as an array of objects
 */
@@ -90,6 +88,7 @@ function getSubreddits() {
   // Load reddit.com/subreddits.json and call back with an array of subreddits
   var subredditsURL = "https://www.reddit.com/subreddits.json";
   var subredURL = "https://www.reddit.com";
+  var reditURL = "https://www.reddit.com";
 
   // Fire request to subreddits
   var subredditsPromise = requestPromise(subredditsURL);
@@ -115,22 +114,64 @@ function getSubreddits() {
 
     })
     .then(function(answers) {
-      
+
       subredURL = subredURL + answers.listSub + ".json";
       console.log(subredURL);
-      
+
       var subredSelectedPromise = requestPromise(subredURL);
       return subredSelectedPromise;
 
     })
     .then(function(subredSelectedPageResults) {
-  
+
       var subredSelectedParsed = JSON.parse(subredSelectedPageResults);
 
-      subredSelectedParsed.data.children.forEach(function(item) {
-        console.log(" | " + item.data.title);
-      });
-    });
+      var listSubRedditslist = subredSelectedParsed.data.children.map(function(res) {
+        return {
+          name: res.data.title,
+          value: res.data.permalink
+        };
+      })
+
+      return inquirer.prompt({
+        type: 'list',
+        name: 'listSubRed',
+        message: 'What do you want to do?',
+        choices: listSubRedditslist
+      })
+
+    })
+    .then(function(answers2) {
+        
+        var subredCommentsURL = reditURL + answers2.listSubRed + ".json";
+        console.log(subredCommentsURL);
+        
+        var reditCommentsPromise = requestPromise(subredCommentsURL);
+        return reditCommentsPromise;
+        
+    })
+    .then(function(reditCommentsPageResults) {
+
+      var reditCommentsSelectedParsed = JSON.parse(reditCommentsPageResults);
+
+      console.log(reditCommentsSelectedParsed);
+
+      // var listReditComments = reditCommentsSelectedParsed.data.children.map(function(res) {
+      //   return {
+      //     name: res.data.title,
+      //     value: res.data.permalink
+      //   };
+      // })
+
+      // return inquirer.prompt({
+      //   type: 'list',
+      //   name: 'listSubRed',
+      //   message: 'What do you want to do?',
+      //   choices: listReditComments
+      // })
+
+    })
+    ;
 
 }
 
