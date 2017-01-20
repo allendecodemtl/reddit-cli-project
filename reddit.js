@@ -3,9 +3,7 @@ var requestPromise = require('request-promise');
 var promptPromise = require('prompt-promise');
 var inquirer = require('inquirer');
 
-var redditURL = "https://www.reddit.com/.json";
-var subredURL = "https://www.reddit.com";
-var subredditsURL = "https://www.reddit.com/subreddits.json";
+
 
 
 /*
@@ -16,6 +14,7 @@ function getHomepage() {
   // TODO: REPLACE request with requestAsJson!
 
   // Fire request to reddit
+  var redditURL = "https://www.reddit.com/.json";
   var homePromise = requestPromise(redditURL);
 
   return homePromise
@@ -48,7 +47,7 @@ This function should "return" the posts on the front page of a subreddit as an a
 function getSubreddit() {
   // Load reddit.com/r/{subreddit}.json and call back with the array of posts
 
-
+  var subredURL = "https://www.reddit.com";
   // Prompt user for subreddit
   var pPromise = promptPromise('Subreddit (e.g /r/montreal/):');
 
@@ -56,7 +55,7 @@ function getSubreddit() {
     .then(function(pResult) {
 
       subredURL = subredURL + pResult + ".json";
-      //console.log(subredURL);
+      console.log(subredURL);
       // Fire request to subreddits
       var subredPromise = requestPromise(subredURL);
       return subredPromise;
@@ -89,6 +88,8 @@ This function should "return" all the popular subreddits
 */
 function getSubreddits() {
   // Load reddit.com/subreddits.json and call back with an array of subreddits
+  var subredditsURL = "https://www.reddit.com/subreddits.json";
+  var subredURL = "https://www.reddit.com";
 
   // Fire request to subreddits
   var subredditsPromise = requestPromise(subredditsURL);
@@ -114,8 +115,9 @@ function getSubreddits() {
 
     })
     .then(function(answers) {
-      console.log(answers.listSub);
+      
       subredURL = subredURL + answers.listSub + ".json";
+      console.log(subredURL);
       
       var subredSelectedPromise = requestPromise(subredURL);
       return subredSelectedPromise;
@@ -123,9 +125,9 @@ function getSubreddits() {
     })
     .then(function(subredSelectedPageResults) {
   
-      var subredParsed = JSON.parse(subredSelectedPageResults);
+      var subredSelectedParsed = JSON.parse(subredSelectedPageResults);
 
-      subredParsed.data.children.forEach(function(item) {
+      subredSelectedParsed.data.children.forEach(function(item) {
         console.log(" | " + item.data.title);
       });
     });
