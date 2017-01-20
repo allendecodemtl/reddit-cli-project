@@ -136,19 +136,19 @@ function getSubreddits() {
       return inquirer.prompt({
         type: 'list',
         name: 'listSubRed',
-        message: 'What do you want to do?',
+        message: 'See comments?',
         choices: listSubRedditslist
       })
 
     })
     .then(function(answers2) {
-        
-        var subredCommentsURL = reditURL + answers2.listSubRed + ".json";
-        console.log(subredCommentsURL);
-        
-        var reditCommentsPromise = requestPromise(subredCommentsURL);
-        return reditCommentsPromise;
-        
+
+      var subredCommentsURL = reditURL + answers2.listSubRed + ".json";
+      console.log(subredCommentsURL);
+
+      var reditCommentsPromise = requestPromise(subredCommentsURL);
+      return reditCommentsPromise;
+
     })
     .then(function(reditCommentsPageResults) {
 
@@ -170,8 +170,7 @@ function getSubreddits() {
       //   choices: listReditComments
       // })
 
-    })
-    ;
+    });
 
 }
 
