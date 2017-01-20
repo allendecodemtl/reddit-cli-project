@@ -4,13 +4,24 @@
   "description": "Reddit command-line browsing",
   "main": "index.js",
   "dependencies": {
-    "inquirer": "^1.0.2",
-    "request": "^2.72.0"
+    "image-to-ascii": "^3.0.5",
+    "inquirer": "^1.2.3",
+    "prompt-promise": "^1.0.3",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ziad Saab <ziad.saab@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allendecodemtl/reddit-cli-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/allendecodemtl/reddit-cli-project/issues"
+  },
+  "homepage": "https://github.com/allendecodemtl/reddit-cli-project#readme"
 }

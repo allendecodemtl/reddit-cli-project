@@ -1,26 +1,37 @@
 var request = require('request');
+var requestPromise = require('request-promise');
+var promptPromise = require('prompt-promise');
+var inquirer = require('inquirer');
+
+var redditURL = "https://www.reddit.com/.json";
+var subredURL = "https://www.reddit.com";
+var subredditsURL = "https://www.reddit.com/subreddits.json";
+
 
 /*
 This function should "return" the default homepage posts as an array of objects
 */
-function getHomepage(callback) {
+function getHomepage() {
   // Load reddit.com/.json and call back with the array of posts
   // TODO: REPLACE request with requestAsJson!
-  request('https://reddit.com/.json', function(err, res) {
-    if (err) {
-      callback(err);
-    }
-    else {
-      try {
-        var response = JSON.parse(res.body);
-        callback(null, response.data.children); // look at the result and explain why we're returning .data.children
-      }
-      catch(e) {
-        callback(e);
-      }
-    }
-  });
+
+  // Fire request to reddit
+  var homePromise = requestPromise(redditURL);
+
+  return homePromise
+    .then(function(homePageResults) {
+
+      var homePageParsed = JSON.parse(homePageResults);
+
+      //return homePageParsed.data.children; // Return array
+
+      homePageParsed.data.children.forEach(function(item) {
+        console.log(" | " + item.data.title);
+      });
+
+    })
 }
+
 
 /*
 This function should "return" the default homepage posts as an array of objects.
@@ -34,8 +45,34 @@ function getSortedHomepage(sortingMethod, callback) {
 /*
 This function should "return" the posts on the front page of a subreddit as an array of objects.
 */
-function getSubreddit(subreddit, callback) {
+function getSubreddit() {
   // Load reddit.com/r/{subreddit}.json and call back with the array of posts
+
+
+  // Prompt user for subreddit
+  var pPromise = promptPromise('Subreddit (e.g /r/montreal/):');
+
+  return pPromise
+    .then(function(pResult) {
+
+      subredURL = subredURL + pResult + ".json";
+      //console.log(subredURL);
+      // Fire request to subreddits
+      var subredPromise = requestPromise(subredURL);
+      return subredPromise;
+
+    })
+    .then(function(subredPageResults) {
+
+      var subredParsed = JSON.parse(subredPageResults);
+
+      //return subredditsParsed.data.children; // Return array
+
+      subredParsed.data.children.forEach(function(item) {
+        console.log(" | " + item.data.title);
+      });
+    })
+
 }
 
 /*
@@ -50,11 +87,56 @@ function getSortedSubreddit(subreddit, sortingMethod, callback) {
 /*
 This function should "return" all the popular subreddits
 */
-function getSubreddits(callback) {
+function getSubreddits() {
   // Load reddit.com/subreddits.json and call back with an array of subreddits
+
+  // Fire request to subreddits
+  var subredditsPromise = requestPromise(subredditsURL);
+
+  return subredditsPromise
+    .then(function(subredditsPageResults) {
+
+      var subredditsParsed = JSON.parse(subredditsPageResults);
+
+      var listSubReddits = subredditsParsed.data.children.map(function(res) {
+        return {
+          name: res.data.url,
+          value: res.data.url
+        };
+      })
+
+      return inquirer.prompt({
+        type: 'list',
+        name: 'listSub',
+        message: 'What do you want to do?',
+        choices: listSubReddits
+      })
+
+    })
+    .then(function(answers) {
+      console.log(answers.listSub);
+      subredURL = subredURL + answers.listSub + ".json";
+      
+      var subredSelectedPromise = requestPromise(subredURL);
+      return subredSelectedPromise;
+
+    })
+    .then(function(subredSelectedPageResults) {
+  
+      var subredParsed = JSON.parse(subredSelectedPageResults);
+
+      subredParsed.data.children.forEach(function(item) {
+        console.log(" | " + item.data.title);
+      });
+    });
+
 }
 
 // Export the API
 module.exports = {
   // ...
+  getHomepage: getHomepage,
+  getSubreddit: getSubreddit,
+  getSubreddits: getSubreddits
+
 };
